@@ -1,0 +1,102 @@
+<!doctype html>
+<head>
+	<meta charset="utf-8">
+	<title> Test Layout</title>
+	<script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
+    <script type="text/javascript" src="./testdata.js"></script>
+	<style type="text/css">
+		.greenbutton.webix_el_button .webix_button{
+    		border:1px solid green;
+    		color:green;
+		}
+		.webix_secondary.greenbutton .webix_button{
+		    background-color:#90ee90;
+		}
+	</style>
+</head>
+<body>
+
+    <!-- <div id ="test"></div> -->
+
+	<script type="text/javascript" charset="utf-8">
+
+        var listLeft = {
+            view:"list",
+            id:"mylist",
+            minWidth:150,
+            autoheight:true,
+            scroll:false,
+            data:[ "Dashboard", "Users", "Products", "Locations" ]
+        };
+
+        var leftMenu = {
+			rows:[
+                listLeft,
+				{ },
+				{ view:"button", id:"mybuttonLeft", value:"Log out"}
+
+			]
+		};
+
+        var dataCol2 = {
+			view:"datatable",
+			// container:"test",
+			data:small_film_set,
+			autoConfig:true,
+			autoheight:true,
+		};
+
+        var toolBarRi = {
+            cols:[
+                { view:"button", value:"Add new", css:"webix_primary" },
+                { view:"button", value:"Clear" }
+            ]
+        };
+
+        var formRi = {
+            view:"form",
+            elements:[
+                { view:"text", label:"Title"},
+                { view:"text", label:"Year"},
+                { view:"text", label:"Rating"},
+                { view:"text", label:"Votes"},
+                toolBarRi
+            ]
+        };
+
+        var row2 = { 
+            cols:[ 
+                leftMenu,
+                { view:"resizer"},
+                dataCol2,
+                formRi
+            ]
+        };
+
+        var butTop = {
+            view:"button",
+            id:"mybutton",
+            value:"Styled button",
+            css:"greenbutton",
+            width:200
+		};
+
+        var colTop = { 
+            cols:[ 
+                { template:"My App"},
+                butTop,
+            ]
+        };
+
+        webix.ui({
+            rows:[
+                colTop,
+                row2,
+                { template:"The sofware is provided by <a href='URL'>https://webix.com</a>. All rights reserved (c)"},
+            ]
+        });
+
+	</script>
+</body>
+</html>
