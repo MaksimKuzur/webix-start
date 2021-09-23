@@ -6,13 +6,35 @@
 	<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
     <script type="text/javascript" src="./testdata.js"></script>
 	<style type="text/css">
-		.greenbutton.webix_el_button .webix_button{
-    		border:1px solid green;
-    		color:green;
+		.buttonTop.webix_el_button .webix_button{
+    		/* border:1px solid green; */
+    		color:white;
 		}
-		.webix_secondary.greenbutton .webix_button{
-		    background-color:#90ee90;
+       	.webix_secondary.buttonTop .webix_button{
+		    background-color:rgb(101, 118, 133);
 		}
+        .buttonLeft.webix_el_button .webix_button{
+    		color:rgb(66, 212, 29);
+		}
+        .webix_secondary.buttonLeft .webix_button{
+		    background-color:rgb(238, 238, 238);
+		}
+        .labelMyApp{
+		    background-color:rgb(101, 118, 133);
+            color:white;
+		}
+        .col1,
+        .listLeft {
+            background-color:rgb(238, 238, 238);
+        }
+        .row1 {
+            background-color:rgb(101, 118, 133);
+            /* border-color: rgb(101, 118, 133); */
+        }
+        .row3 {
+            text-align: center;
+            /* height: 200px; */
+        }
 	</style>
 </head>
 <body>
@@ -22,6 +44,7 @@
 	<script type="text/javascript" charset="utf-8">
 
         var listLeft = {
+            css: "listLeft",
             view:"list",
             id:"mylist",
             minWidth:150,
@@ -29,22 +52,32 @@
             scroll:false,
             data:[ "Dashboard", "Users", "Products", "Locations" ]
         };
+        
+        var butLeft = {
+            view:"button",
+            id:"buttonLeft",
+            value:"Connected",
+            css:"buttonLeft",
+            width:100
+		};
 
         var leftMenu = {
+            css:"col1",
 			rows:[
                 listLeft,
 				{ },
-				{ view:"button", id:"mybuttonLeft", value:"Log out"}
-
+				butLeft
 			]
 		};
 
         var dataCol2 = {
 			view:"datatable",
 			// container:"test",
+            
 			data:small_film_set,
 			autoConfig:true,
-			autoheight:true,
+			// autoheight:true,
+            // height:900
 		};
 
         var toolBarRi = {
@@ -54,46 +87,64 @@
             ]
         };
 
-        var formRi = {
+        var formRight = {
             view:"form",
+            width:250,
             elements:[
                 { view:"text", label:"Title"},
                 { view:"text", label:"Year"},
                 { view:"text", label:"Rating"},
                 { view:"text", label:"Votes"},
-                toolBarRi
             ]
         };
+
+        var rightMenu = {
+            // css:"col1",
+			rows:[
+                { template:"EDIT FILMS", height:50, css:""},
+				formRight,
+                toolBarRi,
+                { }
+			]
+		};
 
         var row2 = { 
             cols:[ 
                 leftMenu,
                 { view:"resizer"},
                 dataCol2,
-                formRi
+                rightMenu
             ]
         };
 
         var butTop = {
             view:"button",
-            id:"mybutton",
-            value:"Styled button",
-            css:"greenbutton",
-            width:200
+            id:"buttonTop",
+            value:"Profile",
+            css:"buttonTop",
+            width:100,
 		};
 
-        var colTop = { 
+        var row1 = {
+            css:"row1",
             cols:[ 
-                { template:"My App"},
+                { template:"My App", css:"labelMyApp", borderless: true},
                 butTop,
             ]
         };
 
+        var row3 = {
+            css:"row3",
+            template:"The sofware is provided by <a href='URL'>https://webix.com</a>. All rights reserved (c)",
+            height: 30
+        };
+
+
         webix.ui({
             rows:[
-                colTop,
+                row1,
                 row2,
-                { template:"The sofware is provided by <a href='URL'>https://webix.com</a>. All rights reserved (c)"},
+                row3,
             ]
         });
 
