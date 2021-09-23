@@ -1,52 +1,57 @@
-var listLeft = {
-    css: "listLeft",
+const leftSidebarList = {
+    css: "left_sidebar_list",
     view:"list",
-    id:"mylist",
-    minWidth:150,
+    id:"leftSidebarList",
+    // minWidth:150,
     borderless: true,
     autoheight:true,
     scroll:false,
     data:[ "Dashboard", "Users", "Products", "Locations" ]
 };
 
-var butLeft = {
-    view:"button",
-    id:"buttonLeft",
-    type:"icon",
-    icon:"mdi mdi-check",
-    label:"Connected",
-    css:"buttonLeft",
-    width:150
+const leftSidebarLabel = {
+    template:"<span class='webix_icon wxi-check'></span>Connected",
+    borderless: true,
+    width:150,
+    height:30,
+    css:"left_sidebar_label"
 };
 
-var leftMenu = {
-    css:"col1",
+const leftSidebar = {
+    css:"left_sidebar_spaser",
     rows:[
-        listLeft,
+        leftSidebarList,
         { },
-        butLeft
+        leftSidebarLabel
     ]
 };
 
-var dataCol2 = {
+const dataTable = {
     view:"datatable",
     scrollX:false,
-    css:"scrollDisab",
+    css:"datatable_scrollbar_x",
     data:small_film_set,
     autoConfig:true,
 };
 
-var toolBarRi = {
+const rightSidebarToolbar = {
+    margin:10,
+    paddingX:15,
+    borderless:true,
     cols:[
-        {},
-        { view:"button", value:"Add new", css:"webix_primary", width:105},
-        {},
-        { view:"button", value:"Clear", width:105 },
-        {},
+        {
+            view:"button",
+            value:"Add new",
+            css:"webix_primary",
+        },
+        {
+            view:"button",
+            value:"Clear",
+        },
     ]
 };
 
-var formRight = {
+const rightSidebarForm = {
     borderless: true,
     view:"form",
     width:250,
@@ -58,53 +63,61 @@ var formRight = {
     ]
 };
 
-var rightMenu = {
+const rightSidebar = {
     rows:[
-        { view:"fieldset", label:"Edit films", height:50, css: "border_content"},
-        formRight,
-        toolBarRi,
+        {
+            view:"fieldset",
+            label:"Edit films",
+            height:50,
+            css: "right_sidebar_title"
+        },
+        rightSidebarForm,
+        rightSidebarToolbar,
         { }
     ]
 };
 
-var row2 = { 
+const content = { 
     cols:[ 
-        leftMenu,
+        leftSidebar,
         { view:"resizer"},
-        dataCol2,
-        rightMenu
+        dataTable,
+        rightSidebar
     ]
 };
 
-var butTop = {
+const headerButton = {
     view:"button",
-    id:"buttonTop",
+    id:"headerButton",
     type:"icon",
     icon:"mdi mdi-account-search",
     label:"Profile",
-    css:"buttonTop",
+    css:"header_button",
     width:100,
 };
 
-var row1 = {
-    css:"row1",
+const header = {
+    css:"header",
     cols:[ 
-        { template:"My App", css:"labelMyApp", borderless: true},
-        butTop,
+        {
+            template:"My App",
+            css:"header_label",
+            borderless: true
+        },
+        headerButton,
     ]
 };
 
-var row3 = {
-    css:"row3",
+const footer = {
+    css:"footer",
     template:"The sofware is provided by <a href='URL'>https://webix.com</a>. All rights reserved (c)",
     height: 30
 };
 
-
 webix.ui({
     rows:[
-        row1,
-        row2,
-        row3,
+        header,
+        content,
+        footer,
     ]
 });

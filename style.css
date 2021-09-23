@@ -1,39 +1,35 @@
-.buttonTop.webix_el_button .webix_button{
+.header_button .webix_button .webix_icon_btn,
+.header_button .webix_button
+{
     color:white;
-}
-   .webix_secondary.buttonTop .webix_button{
     background-color:rgb(101, 118, 133);
 }
-.buttonLeft.webix_el_button .webix_button{
+.header_label{
+    background-color:rgb(101, 118, 133);
+    color:white;
+    padding: 5px;
+}
+.left_sidebar_label {
+    font-family:"Webix Material Icons";
+    margin:0px 10px;
     color:rgb(66, 212, 29);
-}
-.webix_secondary.buttonLeft .webix_button{
+    text-align: center;
     background-color:rgb(238, 238, 238);
 }
-.labelMyApp{
-    background-color:rgb(101, 118, 133);
-    color:white;
-    padding: 5px;
-}
-.labelEditFilms{
-    background-color:rgb(101, 118, 133);
-    color:white;
-    padding: 5px;
-}
-.col1,
-.listLeft {
+.left_sidebar_spaser,
+.left_sidebar_list {
     background-color:rgb(238, 238, 238);
 }
-.row1 {
+.header {
     background-color:rgb(101, 118, 133);
 }
-.row3 {
+.footer {
     text-align: center;
 }
-.scrollDisab {
+.datatable_scrollbar_x {
     overflow-x: hidden;
 }
-.border_content > fieldset {
+.right_sidebar_title > fieldset {
     border:2px solid rgb(214, 210, 210);
     border-left:none;
     border-right:none;
@@ -41,5 +37,4 @@
     margin-top: 35px;
     margin-left: 10px;
     padding-left: 25px;
-    
 }
