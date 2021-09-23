@@ -4,10 +4,10 @@
 	<title> Test Layout</title>
 	<script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
 	<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
+    <link rel="stylesheet" href="//cdn.webix.com/materialdesignicons/5.8.95/css/materialdesignicons.min.css" type="text/css" charset="utf-8">
     <script type="text/javascript" src="./testdata.js"></script>
 	<style type="text/css">
 		.buttonTop.webix_el_button .webix_button{
-    		/* border:1px solid green; */
     		color:white;
 		}
        	.webix_secondary.buttonTop .webix_button{
@@ -22,6 +22,12 @@
         .labelMyApp{
 		    background-color:rgb(101, 118, 133);
             color:white;
+            padding: 5px;
+		}
+        .labelEditFilms{
+		    background-color:rgb(101, 118, 133);
+            color:white;
+            padding: 5px;
 		}
         .col1,
         .listLeft {
@@ -29,17 +35,26 @@
         }
         .row1 {
             background-color:rgb(101, 118, 133);
-            /* border-color: rgb(101, 118, 133); */
         }
         .row3 {
             text-align: center;
-            /* height: 200px; */
+        }
+        .scrollDisab {
+            overflow-x: hidden;
+        }
+        .border_content > fieldset {
+            border:2px solid rgb(214, 210, 210);
+            border-left:none;
+            border-right:none;
+            border-bottom:none;
+            margin-top: 35px;
+            margin-left: 10px;
+            padding-left: 25px;
+            
         }
 	</style>
 </head>
 <body>
-
-    <!-- <div id ="test"></div> -->
 
 	<script type="text/javascript" charset="utf-8">
 
@@ -48,6 +63,7 @@
             view:"list",
             id:"mylist",
             minWidth:150,
+            borderless: true,
             autoheight:true,
             scroll:false,
             data:[ "Dashboard", "Users", "Products", "Locations" ]
@@ -56,9 +72,11 @@
         var butLeft = {
             view:"button",
             id:"buttonLeft",
-            value:"Connected",
+            type:"icon",
+            icon:"mdi mdi-check",
+            label:"Connected",
             css:"buttonLeft",
-            width:100
+            width:150
 		};
 
         var leftMenu = {
@@ -72,22 +90,24 @@
 
         var dataCol2 = {
 			view:"datatable",
-			// container:"test",
-            
+            scrollX:false,
+            css:"scrollDisab",
 			data:small_film_set,
 			autoConfig:true,
-			// autoheight:true,
-            // height:900
 		};
 
         var toolBarRi = {
             cols:[
-                { view:"button", value:"Add new", css:"webix_primary" },
-                { view:"button", value:"Clear" }
+                {},
+                { view:"button", value:"Add new", css:"webix_primary", width:105},
+                {},
+                { view:"button", value:"Clear", width:105 },
+                {},
             ]
         };
 
         var formRight = {
+            borderless: true,
             view:"form",
             width:250,
             elements:[
@@ -99,9 +119,8 @@
         };
 
         var rightMenu = {
-            // css:"col1",
 			rows:[
-                { template:"EDIT FILMS", height:50, css:""},
+                { view:"fieldset", label:"Edit films", height:50, css: "border_content"},
 				formRight,
                 toolBarRi,
                 { }
@@ -120,7 +139,9 @@
         var butTop = {
             view:"button",
             id:"buttonTop",
-            value:"Profile",
+            type:"icon",
+            icon:"mdi mdi-account-search",
+            label:"Profile",
             css:"buttonTop",
             width:100,
 		};
