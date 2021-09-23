@@ -1,0 +1,45 @@
+.buttonTop.webix_el_button .webix_button{
+    color:white;
+}
+   .webix_secondary.buttonTop .webix_button{
+    background-color:rgb(101, 118, 133);
+}
+.buttonLeft.webix_el_button .webix_button{
+    color:rgb(66, 212, 29);
+}
+.webix_secondary.buttonLeft .webix_button{
+    background-color:rgb(238, 238, 238);
+}
+.labelMyApp{
+    background-color:rgb(101, 118, 133);
+    color:white;
+    padding: 5px;
+}
+.labelEditFilms{
+    background-color:rgb(101, 118, 133);
+    color:white;
+    padding: 5px;
+}
+.col1,
+.listLeft {
+    background-color:rgb(238, 238, 238);
+}
+.row1 {
+    background-color:rgb(101, 118, 133);
+}
+.row3 {
+    text-align: center;
+}
+.scrollDisab {
+    overflow-x: hidden;
+}
+.border_content > fieldset {
+    border:2px solid rgb(214, 210, 210);
+    border-left:none;
+    border-right:none;
+    border-bottom:none;
+    margin-top: 35px;
+    margin-left: 10px;
+    padding-left: 25px;
+    
+}
