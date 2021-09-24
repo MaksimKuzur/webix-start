@@ -3,21 +3,28 @@
 {
     color:white;
     background-color:rgb(101, 118, 133);
+    background:transparent;
+}
+.header_button .webix_button:hover {
+    background-color:rgb(101, 118, 133);
+}
+.header_button .webix_button:focus {
+    background-color:rgb(101, 118, 133);
 }
 .header_label{
     background-color:rgb(101, 118, 133);
     color:white;
     padding: 5px;
 }
-.left_sidebar_label {
+.mainmenu_label {
     font-family:"Webix Material Icons";
     margin:0px 10px;
     color:rgb(66, 212, 29);
     text-align: center;
     background-color:rgb(238, 238, 238);
 }
-.left_sidebar_spaser,
-.left_sidebar_list {
+.mainmenu_spaser,
+.mainmenu_list {
     background-color:rgb(238, 238, 238);
 }
 .header {

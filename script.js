@@ -1,7 +1,7 @@
-const leftSidebarList = {
-    css: "left_sidebar_list",
+const mainMenuList = {
+    css: "mainmenu_list",
     view:"list",
-    id:"leftSidebarList",
+    id:"mainMenuList",
     // minWidth:150,
     borderless: true,
     autoheight:true,
@@ -9,32 +9,33 @@ const leftSidebarList = {
     data:[ "Dashboard", "Users", "Products", "Locations" ]
 };
 
-const leftSidebarLabel = {
+const mainMenuLabel = {
     template:"<span class='webix_icon wxi-check'></span>Connected",
     borderless: true,
     width:150,
     height:30,
-    css:"left_sidebar_label"
+    css:"mainmenu_label"
 };
 
-const leftSidebar = {
-    css:"left_sidebar_spaser",
+const mainMenu = {
+    css:"mainmenu_spaser",
     rows:[
-        leftSidebarList,
+        mainMenuList,
         { },
-        leftSidebarLabel
+        mainMenuLabel
     ]
 };
 
 const dataTable = {
     view:"datatable",
+    id:"dataTable",
     scrollX:false,
     css:"datatable_scrollbar_x",
     data:small_film_set,
     autoConfig:true,
 };
 
-const rightSidebarToolbar = {
+const formToolbar = {
     margin:10,
     paddingX:15,
     borderless:true,
@@ -43,24 +44,58 @@ const rightSidebarToolbar = {
             view:"button",
             value:"Add new",
             css:"webix_primary",
+            click:function() {
+                if($$("formForDatatable").validate()){
+                    let item = $$("formForDatatable").getValues();
+                    $$("dataTable").add(item);
+                    webix.message("validation is successful");
+                }
+            }
         },
         {
             view:"button",
             value:"Clear",
-        },
+            click:function(){
+                webix.confirm({
+                    text:"Clear the form?"
+                }).then(
+                    function(){
+                        webix.message("Confirmed");
+                        $$("formForDatatable").clearValidation();
+                        $$("formForDatatable").clear();
+                    }, 
+                    function(){
+                        webix.message("Rejected");
+                    }
+                );
+            }
+        }
     ]
 };
 
-const rightSidebarForm = {
+const formForDatatable = {
     borderless: true,
     view:"form",
+    id: "formForDatatable",
     width:250,
     elements:[
-        { view:"text", label:"Title"},
-        { view:"text", label:"Year"},
-        { view:"text", label:"Rating"},
-        { view:"text", label:"Votes"},
-    ]
+        { view:"text", label:"Title", name:"title", invalidMessage:"“title“ must be filled in" },
+        { view:"text", label:"Year", name:"year", invalidMessage:"“year“ should be between 1970 and current" },
+        { view:"text", label:"Votes", name:"votes", invalidMessage:"“votes“ must be less than 100000" },        
+        { view:"text", label:"Rating", name:"rating", invalidMessage:"“rating“ cannot be empty or 0" },
+        { view:"text", label:"Rank", name:"rank" },
+        { view:"text", label:"Category", name:"category" },
+    ],
+    rules:{
+        title:webix.rules.isNotEmpty,
+        year:function(value){
+            return value>1970 && value <(new Date()).getFullYear();
+        },
+        votes:function(value){
+            return value>0 && value < 100000;
+        },
+        rating:function(value){ return value > 0; },
+    }
 };
 
 const rightSidebar = {
@@ -71,15 +106,15 @@ const rightSidebar = {
             height:50,
             css: "right_sidebar_title"
         },
-        rightSidebarForm,
-        rightSidebarToolbar,
+        formForDatatable,
+        formToolbar,
         { }
     ]
 };
 
 const content = { 
     cols:[ 
-        leftSidebar,
+        mainMenu,
         { view:"resizer"},
         dataTable,
         rightSidebar
@@ -92,6 +127,12 @@ const headerButton = {
     type:"icon",
     icon:"mdi mdi-account-search",
     label:"Profile",
+    click:function(){
+        $$("popupProfile").show({
+            x:(window.screen.width-135),
+            y:40
+        });
+    },
     css:"header_button",
     width:100,
 };
@@ -121,3 +162,15 @@ webix.ui({
         footer,
     ]
 });
+
+webix.ui({
+    view:"popup",
+    id:"popupProfile",
+    move:true,
+    // position:"center",
+    body:{
+      view:"list",
+      autoheight:true,
+      data:[ "Settings", "Log Out" ]
+    }
+  });
