@@ -45,8 +45,8 @@ const formToolbar = {
             value:"Add new",
             css:"webix_primary",
             click:function() {
-                if($$("formForDatatable").validate()){
-                    let item = $$("formForDatatable").getValues();
+                if($$("formInputElements").validate()){
+                    let item = $$("formInputElements").getValues();
                     $$("dataTable").add(item);
                     webix.message("validation is successful");
                 }
@@ -61,8 +61,8 @@ const formToolbar = {
                 }).then(
                     function(){
                         webix.message("Confirmed");
-                        $$("formForDatatable").clearValidation();
-                        $$("formForDatatable").clear();
+                        $$("formInputElements").clearValidation();
+                        $$("formInputElements").clear();
                     }, 
                     function(){
                         webix.message("Rejected");
@@ -73,10 +73,10 @@ const formToolbar = {
     ]
 };
 
-const formForDatatable = {
+const formInputElements = {
     borderless: true,
     view:"form",
-    id: "formForDatatable",
+    id: "formInputElements",
     width:250,
     elements:[
         { view:"text", label:"Title", name:"title", invalidMessage:"“title“ must be filled in" },
@@ -98,15 +98,15 @@ const formForDatatable = {
     }
 };
 
-const rightSidebar = {
+const formForDatatable = {
     rows:[
         {
             view:"fieldset",
             label:"Edit films",
             height:50,
-            css: "right_sidebar_title"
+            css: "form_title"
         },
-        formForDatatable,
+        formInputElements,
         formToolbar,
         { }
     ]
@@ -117,7 +117,7 @@ const content = {
         mainMenu,
         { view:"resizer"},
         dataTable,
-        rightSidebar
+        formForDatatable
     ]
 };
 

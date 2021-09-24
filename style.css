@@ -36,7 +36,7 @@
 .datatable_scrollbar_x {
     overflow-x: hidden;
 }
-.right_sidebar_title > fieldset {
+.form_title > fieldset {
     border:2px solid rgb(214, 210, 210);
     border-left:none;
     border-right:none;
