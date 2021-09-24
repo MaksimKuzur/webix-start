@@ -1,0 +1,40 @@
+.header_button .webix_button .webix_icon_btn,
+.header_button .webix_button
+{
+    color:white;
+    background-color:rgb(101, 118, 133);
+}
+.header_label{
+    background-color:rgb(101, 118, 133);
+    color:white;
+    padding: 5px;
+}
+.left_sidebar_label {
+    font-family:"Webix Material Icons";
+    margin:0px 10px;
+    color:rgb(66, 212, 29);
+    text-align: center;
+    background-color:rgb(238, 238, 238);
+}
+.left_sidebar_spaser,
+.left_sidebar_list {
+    background-color:rgb(238, 238, 238);
+}
+.header {
+    background-color:rgb(101, 118, 133);
+}
+.footer {
+    text-align: center;
+}
+.datatable_scrollbar_x {
+    overflow-x: hidden;
+}
+.right_sidebar_title > fieldset {
+    border:2px solid rgb(214, 210, 210);
+    border-left:none;
+    border-right:none;
+    border-bottom:none;
+    margin-top: 35px;
+    margin-left: 10px;
+    padding-left: 25px;
+}
