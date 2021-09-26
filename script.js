@@ -1,107 +1,130 @@
-const leftSidebarList = {
-    css: "left_sidebar_list",
-    view:"list",
-    id:"leftSidebarList",
-    // minWidth:150,
+const mainMenuList = {
+    css: "mainmenu_list",
+    view: "list",
+    id: "mainMenuList",
     borderless: true,
-    autoheight:true,
-    scroll:false,
-    data:[ "Dashboard", "Users", "Products", "Locations" ]
+    autoheight: true,
+    scroll: false,
+    data: [ "Dashboard", "Users", "Products", "Locations" ]
 };
 
-const leftSidebarLabel = {
-    template:"<span class='webix_icon wxi-check'></span>Connected",
+const mainMenuLabel = {
+    template: "<span class='webix_icon wxi-check'></span>Connected",
     borderless: true,
-    width:150,
-    height:30,
-    css:"left_sidebar_label"
+    width: 150,
+    height: 30,
+    css: "mainmenu_label"
 };
 
-const leftSidebar = {
-    css:"left_sidebar_spaser",
-    rows:[
-        leftSidebarList,
+const mainMenu = {
+    css: "mainmenu_spaser",
+    rows: [
+        mainMenuList,
         { },
-        leftSidebarLabel
+        mainMenuLabel
     ]
 };
 
 const dataTable = {
-    view:"datatable",
-    scrollX:false,
-    css:"datatable_scrollbar_x",
-    data:small_film_set,
-    autoConfig:true,
+    view: "datatable",
+    id: "dataTable",
+    scrollX: false,
+    css: "datatable_scrollbar_x",
+    data: small_film_set,
+    autoConfig: true,
 };
 
-const rightSidebarToolbar = {
-    margin:10,
-    paddingX:15,
-    borderless:true,
-    cols:[
-        {
-            view:"button",
-            value:"Add new",
-            css:"webix_primary",
-        },
-        {
-            view:"button",
-            value:"Clear",
-        },
-    ]
-};
-
-const rightSidebarForm = {
+const formToolbar = {
+    margin: 10,
     borderless: true,
-    view:"form",
-    width:250,
-    elements:[
-        { view:"text", label:"Title"},
-        { view:"text", label:"Year"},
-        { view:"text", label:"Rating"},
-        { view:"text", label:"Votes"},
+    cols: [
+        {
+            view: "button",
+            value: "Add new",
+            css: "webix_primary",
+            click() {
+                if($$("formForDatatable").validate()){
+                    let item = $$("formForDatatable").getValues();
+                    $$("dataTable").add(item);
+                    webix.message("A new record has been added to the table");
+                }
+            }
+        },
+        {
+            view: "button",
+            value: "Clear",
+            click() {
+                webix.confirm({
+                    text: "Clear the form?"
+                }).then(
+                    () => {
+                        webix.message("Confirmed");
+                        $$("formForDatatable").clearValidation();
+                        $$("formForDatatable").clear();
+                    }, 
+                    () => webix.message("Rejected")
+                );
+            }
+        }
     ]
 };
 
-const rightSidebar = {
-    rows:[
+const formForDatatable = {
+    borderless: true,
+    view: "form",
+    id: "formForDatatable",
+    width: 250,
+    elements: [
         {
-            view:"fieldset",
-            label:"Edit films",
-            height:50,
-            css: "right_sidebar_title"
+            view: "template",
+            template: "Edit films",
+            type: "section",
         },
-        rightSidebarForm,
-        rightSidebarToolbar,
+        { view: "text", label: "Title", name: "title", invalidMessage: "must be filled in" },
+        { view: "text", label: "Year", name: "year", invalidMessage: "1970 < \"year\" < current" },
+        { view: "text", label: "Votes", name: "votes", invalidMessage: "< 100000" },        
+        { view: "text", label: "Rating", name: "rating", invalidMessage: "cannot be empty or 0" },
+        { view: "text", label: "Rank", name: "rank" },
+        { view: "text", label: "Category", name: "category" },
+        formToolbar,
         { }
-    ]
+    ],
+    rules: {
+        title: webix.rules.isNotEmpty,
+        year: value => value > 1970 && value < (new Date()).getFullYear(),
+        votes: value => value > 0 && value < 100000,
+        rating: value => value > 0,
+    }
 };
 
 const content = { 
-    cols:[ 
-        leftSidebar,
-        { view:"resizer"},
+    cols: [ 
+        mainMenu,
+        { view: "resizer"},
         dataTable,
-        rightSidebar
+        formForDatatable
     ]
 };
 
 const headerButton = {
-    view:"button",
-    id:"headerButton",
-    type:"icon",
-    icon:"mdi mdi-account-search",
-    label:"Profile",
-    css:"header_button",
-    width:100,
+    view: "button",
+    id: "headerButton",
+    type: "icon",
+    icon: "mdi mdi-account-search",
+    label: "Profile",
+    click() {
+        $$("popupProfile").show($$("headerButton").getNode());
+    },
+    css: "header_button",
+    width: 100,
 };
 
 const header = {
-    css:"header",
-    cols:[ 
+    css: "header",
+    cols: [ 
         {
-            template:"My App",
-            css:"header_label",
+            template: "My App",
+            css: "header_label",
             borderless: true
         },
         headerButton,
@@ -109,15 +132,25 @@ const header = {
 };
 
 const footer = {
-    css:"footer",
-    template:"The sofware is provided by <a href='URL'>https://webix.com</a>. All rights reserved (c)",
+    css: "footer",
+    template: "The sofware is provided by <a href='URL'>https://webix.com</a>. All rights reserved (c)",
     height: 30
 };
 
 webix.ui({
-    rows:[
+    rows: [
         header,
         content,
         footer,
     ]
 });
+
+webix.ui({
+    view: "popup",
+    id: "popupProfile",
+    body: {
+      view: "list",
+      autoheight: true,
+      data: [ "Settings", "Log Out" ]
+    }
+  });
