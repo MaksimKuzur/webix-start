@@ -1,47 +1,37 @@
 .header_button .webix_button .webix_icon_btn,
 .header_button .webix_button
 {
-    color:white;
-    background-color:rgb(101, 118, 133);
-    background:transparent;
+    color: white;
+    background: transparent;
 }
 .header_button .webix_button:hover {
-    background-color:rgb(101, 118, 133);
+    background-color: rgb(101, 118, 133);
 }
 .header_button .webix_button:focus {
-    background-color:rgb(101, 118, 133);
+    background-color: rgb(101, 118, 133);
 }
 .header_label{
-    background-color:rgb(101, 118, 133);
-    color:white;
+    background-color: rgb(101, 118, 133);
+    color: white;
     padding: 5px;
 }
 .mainmenu_label {
-    font-family:"Webix Material Icons";
-    margin:0px 10px;
-    color:rgb(66, 212, 29);
+    font-family: "Webix Material Icons";
+    margin: 0px 10px;
+    color: rgb(66, 212, 29);
     text-align: center;
-    background-color:rgb(238, 238, 238);
+    background-color: rgb(238, 238, 238);
 }
 .mainmenu_spaser,
 .mainmenu_list {
-    background-color:rgb(238, 238, 238);
+    background-color: rgb(238, 238, 238);
 }
 .header {
-    background-color:rgb(101, 118, 133);
+    background-color: rgb(101, 118, 133);
 }
 .footer {
     text-align: center;
 }
 .datatable_scrollbar_x {
     overflow-x: hidden;
-}
-.form_title > fieldset {
-    border:2px solid rgb(214, 210, 210);
-    border-left:none;
-    border-right:none;
-    border-bottom:none;
-    margin-top: 35px;
-    margin-left: 10px;
-    padding-left: 25px;
 }
