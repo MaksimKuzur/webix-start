@@ -32,6 +32,12 @@
 .footer {
     text-align: center;
 }
-.datatable_scrollbar_x {
-    overflow-x: hidden;
+.id {
+    background-color: rgb(244, 245, 249);
+}
+.hover {
+    background: orange;
+}
+.top_list {
+    background: orange;
 }

@@ -5,6 +5,10 @@ const mainMenuList = {
     borderless: true,
     autoheight: true,
     scroll: false,
+    select: true,
+    on: {
+        onAfterSelect: id => $$(id).show()
+    },
     data: [ "Dashboard", "Users", "Products", "Locations" ]
 };
 
@@ -29,9 +33,74 @@ const dataTable = {
     view: "datatable",
     id: "dataTable",
     scrollX: false,
-    css: "datatable_scrollbar_x",
-    data: small_film_set,
+    columns: [
+        { id: "id", header: "", css: "id", width: 50},
+        { id: "title", header: ["Film title", {content:"textFilter"}], width: 200, sort: "string"},
+        { id: "year", header: ["Released", {content:"selectFilter"}] , width: 80, sort: "int"},
+        { id: "votes", header: ["Votes", {content:"textFilter"}], width: 100, sort: "int"},
+        { id: "del", header: "", template: "{common.trashIcon()}" },
+    ],
+    onClick: {
+        "wxi-trash": function(e, id) {
+            this.remove(id);
+            return false;
+        }
+    },
+    hover: "hover",
+    data: film_set,
     autoConfig: true,
+};
+
+const dataList = {
+    margin: 10,
+    rows: [
+        {
+            height: 40,
+            view: "toolbar",
+            cols: [
+                {view: "text", id: "list_input"},
+                {
+                    view: "button",
+                    value: "Sort asc",
+                    width: 200,
+                    css: "webix_primary",
+                    click() {
+                        $$('list').sort("#name#","asc");
+                    }
+                },
+                {
+                    view: "button",
+                    value: "Sort desc",
+                    width: 200,
+                    click() {
+                        $$('list').sort("#name#","desc");
+                    }
+                }
+            ]
+        },
+        {
+            view: "list",
+            id: "list",
+            select: true,
+            template: "#name# <span class='webix_icon wxi-close'></span>",
+            onClick:{
+                "wxi-close": function(e, id) {
+                  this.remove(id);
+                    return false;
+                }
+            },
+            on: {
+                onAfterRender: () => {
+                    const listTop = $$("list");
+                    listTop.clearCss("top_list");
+                    for (let  i = 0; i < (listTop.count() > 4 ? 5 : listTop.count()); i++ ) {
+                        listTop.addCss(listTop.data.order[i], "top_list");
+                    }
+                }
+            },
+            data: users
+        }
+    ]
 };
 
 const formToolbar = {
@@ -97,12 +166,57 @@ const formForDatatable = {
     }
 };
 
+const chart = {
+    type: "clean", rows: [
+        {
+            type: "clean",
+            height: 54
+        },
+        {
+            type: "clean",
+            view: "chart",
+            type: "bar",
+            value: "#age#",
+            barWidth: 30,
+            radius: 0,
+            height: 300,
+            xAxis: {
+                template: "#age#",
+                title: "Age"
+            },
+            data: users
+        }
+    ]
+}
+
+const tree =  {
+    view: "treetable",
+    id: "treetable",
+    tooltip: true,
+    scroll: "auto",
+    columns: [
+        { id: "id", header: "", width: 50},
+        { id: "title", header: "Title", width: 250,
+        template: "{common.treetable()} #title#" },
+        { id: "price", header: "Price", width: 200}
+    ],    
+    data: products
+}
+
+const main = {
+    cells:[
+        { id: "Dashboard", cols: [dataTable, formForDatatable]},
+        { id: "Users", rows: [dataList, chart]},
+        { id: "Products", rows: [tree]},
+        { id: "Locations", template: "Locations view"}
+    ]
+};
+
 const content = { 
     cols: [ 
         mainMenu,
         { view: "resizer"},
-        dataTable,
-        formForDatatable
+        main,
     ]
 };
 
@@ -149,8 +263,17 @@ webix.ui({
     view: "popup",
     id: "popupProfile",
     body: {
-      view: "list",
-      autoheight: true,
-      data: [ "Settings", "Log Out" ]
+        view: "list",
+        autoheight: true,
+        data: [ "Settings", "Log Out" ]
     }
-  });
+});
+
+$$("mainMenuList").select("Dashboard");
+$$("treetable").openAll();
+$$("list_input").attachEvent("onTimedKeyPress", function() {
+    let value = this.getValue().toLowerCase();
+    $$("list").filter(function(obj) {
+        return obj.name.toLowerCase().indexOf(value) !== -1;
+    })
+});
