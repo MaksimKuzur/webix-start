@@ -89,24 +89,24 @@ const toolbarFormDataFilms = {
 function saveItem() {
     if($$("formForDataFilms").validate()) {
         const form = $$("formForDataFilms");
-        const dataFilms2 = $$("dataFilms");
-        const item_data = form.getValues();
-        if (item_data.id) {
-            dataFilms2.updateItem(item_data.id, item_data);
+        const films = $$("dataFilms");
+        const itemData = form.getValues();
+        if (itemData.id) {
+            films.updateItem(itemData.id, itemData);
         } else {
-            dataFilms2.add(item_data);
+            films.add(itemData);
             webix.message("A new record has been added to the table");
         }
     }
 };
 
 function deleteItem() {
-    const dataFilms2 = $$("dataFilms");
-    const item_id = dataFilms2.getSelectedId();
+    const films = $$("dataFilms");
+    const item_id = films.getSelectedId();
     if (item_id) {
         webix.confirm("Delete selected item?", "confirm-warning").then(
             () => {
-                dataFilms2.remove(item_id);
+                films.remove(item_id);
                 webix.message("Confirmed");
                 $$("formForDataFilms").clearValidation();
                 $$("formForDataFilms").clear();
