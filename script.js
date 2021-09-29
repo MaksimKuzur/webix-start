@@ -6,13 +6,16 @@ const mainMenuList = {
     autoheight: true,
     scroll: false,
     select: true,
+    ready: function() {
+        $$("mainMenuList").select("Dashboard");
+    },
     on: {
         onAfterSelect: id => $$(id).show()
     },
     data: [ "Dashboard", "Users", "Products", "Locations" ]
 };
 
-const mainMenuLabel = {
+const statusConnectionLabel = {
     template: "<span class='webix_icon wxi-check'></span>Connected",
     borderless: true,
     width: 150,
@@ -25,123 +28,112 @@ const mainMenu = {
     rows: [
         mainMenuList,
         { },
-        mainMenuLabel
+        statusConnectionLabel
     ]
 };
 
-const dataTable = {
+const dataFilms = {
     view: "datatable",
-    id: "dataTable",
+    id: "dataFilms",
     scrollX: false,
+    select:true,
     columns: [
-        { id: "id", header: "", css: "id", width: 50},
-        { id: "title", header: ["Film title", {content:"textFilter"}], width: 200, sort: "string"},
+        { id: "id", header: "", css: "dataFilms_id", width: 50},
+        { id: "title", header: ["Film title", {content:"textFilter"}], fillspace: true, sort: "string"},
         { id: "year", header: ["Released", {content:"selectFilter"}] , width: 80, sort: "int"},
         { id: "votes", header: ["Votes", {content:"textFilter"}], width: 100, sort: "int"},
-        { id: "del", header: "", template: "{common.trashIcon()}" },
+        { id: "del", header: "", template: "<span class='on_click_delete webix_icon wxi-trash'></span>" },
     ],
     onClick: {
-        "wxi-trash": function(e, id) {
+        "on_click_delete": function(e, id) {
             this.remove(id);
             return false;
         }
     },
-    hover: "hover",
+    on:{
+        onAfterSelect:valuesToForm
+    },
+    hover: "film_hover",
     data: film_set,
-    autoConfig: true,
 };
 
-const dataList = {
-    margin: 10,
-    rows: [
-        {
-            height: 40,
-            view: "toolbar",
-            cols: [
-                {view: "text", id: "list_input"},
-                {
-                    view: "button",
-                    value: "Sort asc",
-                    width: 200,
-                    css: "webix_primary",
-                    click() {
-                        $$('list').sort("#name#","asc");
-                    }
-                },
-                {
-                    view: "button",
-                    value: "Sort desc",
-                    width: 200,
-                    click() {
-                        $$('list').sort("#name#","desc");
-                    }
-                }
-            ]
-        },
-        {
-            view: "list",
-            id: "list",
-            select: true,
-            template: "#name# <span class='webix_icon wxi-close'></span>",
-            onClick:{
-                "wxi-close": function(e, id) {
-                  this.remove(id);
-                    return false;
-                }
-            },
-            on: {
-                onAfterRender: () => {
-                    const listTop = $$("list");
-                    listTop.clearCss("top_list");
-                    for (let  i = 0; i < (listTop.count() > 4 ? 5 : listTop.count()); i++ ) {
-                        listTop.addCss(listTop.data.order[i], "top_list");
-                    }
-                }
-            },
-            data: users
-        }
-    ]
+function valuesToForm(id) {
+    var values = $$("dataFilms").getItem(id);
+    $$("formForDataFilms").setValues(values)
 };
 
-const formToolbar = {
+const toolbarFormDataFilms = {
     margin: 10,
     borderless: true,
     cols: [
         {
             view: "button",
-            value: "Add new",
+            value: "Save",
             css: "webix_primary",
-            click() {
-                if($$("formForDatatable").validate()){
-                    let item = $$("formForDatatable").getValues();
-                    $$("dataTable").add(item);
-                    webix.message("A new record has been added to the table");
-                }
-            }
+            click: saveItem,
+        },
+        {
+            view: "button",
+            value: "Delete",
+            id: "btn_del",
+            click: deleteItem,
         },
         {
             view: "button",
             value: "Clear",
-            click() {
-                webix.confirm({
-                    text: "Clear the form?"
-                }).then(
-                    () => {
-                        webix.message("Confirmed");
-                        $$("formForDatatable").clearValidation();
-                        $$("formForDatatable").clear();
-                    }, 
-                    () => webix.message("Rejected")
-                );
-            }
+            click:clearForm,
         }
     ]
 };
 
-const formForDatatable = {
+function saveItem() {
+    if($$("formForDataFilms").validate()) {
+        const form = $$("formForDataFilms");
+        const dataFilms2 = $$("dataFilms");
+        const item_data = form.getValues();
+        if (item_data.id) {
+            dataFilms2.updateItem(item_data.id, item_data);
+        } else {
+            dataFilms2.add(item_data);
+            webix.message("A new record has been added to the table");
+        }
+    }
+};
+
+function deleteItem() {
+    const dataFilms2 = $$("dataFilms");
+    const item_id = dataFilms2.getSelectedId();
+    if (item_id) {
+        webix.confirm("Delete selected item?", "confirm-warning").then(
+            () => {
+                dataFilms2.remove(item_id);
+                webix.message("Confirmed");
+                $$("formForDataFilms").clearValidation();
+                $$("formForDataFilms").clear();
+            }, 
+            () => webix.message("Rejected")
+        );
+    }
+};
+
+function clearForm() {
+    webix.confirm({
+        text: "Clear the form?"
+    }).then(
+        () => {
+            webix.message("Confirmed");
+            $$("formForDataFilms").clearValidation();
+            $$("formForDataFilms").clear();
+            $$("dataFilms").unselectAll();
+        }, 
+        () => webix.message("Rejected")
+    );
+};
+
+const formForDataFilms = {
     borderless: true,
     view: "form",
-    id: "formForDatatable",
+    id: "formForDataFilms",
     width: 250,
     elements: [
         {
@@ -154,8 +146,7 @@ const formForDatatable = {
         { view: "text", label: "Votes", name: "votes", invalidMessage: "< 100000" },        
         { view: "text", label: "Rating", name: "rating", invalidMessage: "cannot be empty or 0" },
         { view: "text", label: "Rank", name: "rank" },
-        { view: "text", label: "Category", name: "category" },
-        formToolbar,
+        toolbarFormDataFilms,
         { }
     ],
     rules: {
@@ -166,7 +157,57 @@ const formForDatatable = {
     }
 };
 
-const chart = {
+const dataUsers = {
+    margin: 10,
+    rows: [
+        {
+            height: 40,
+            view: "toolbar",
+            cols: [
+                { view: "text", id: "filterUsers" },
+                {
+                    view: "button",
+                    value: "Sort asc",
+                    width: 200,
+                    css: "webix_primary",
+                    click() {
+                        $$('listUsers').sort("#name#","asc");
+                    }
+                },
+                {
+                    view: "button",
+                    value: "Sort desc",
+                    width: 200,
+                    click() {
+                        $$('listUsers').sort("#name#","desc");
+                    }
+                }
+            ]
+        },
+        {
+            view: "list",
+            id: "listUsers",
+            select: true,
+            template: "#name# <span class='on_click_delete webix_icon wxi-close'></span>",
+            onClick: {
+                "on_click_delete": function(e, id) {
+                  this.remove(id);
+                    return false;
+                }
+            },
+            ready: () => {
+                const listTop = $$("listUsers");
+                listTop.clearCss("list_top");
+                for (let  i = 0; i < (listTop.count() > 4 ? 5 : listTop.count()); i++ ) {
+                    listTop.addCss(listTop.data.order[i], "list_top");
+                }
+            },
+            data: users
+        }
+    ]
+};
+
+const chartUsers = {
     type: "clean", rows: [
         {
             type: "clean",
@@ -189,36 +230,22 @@ const chart = {
     ]
 }
 
-const tree =  {
+const productsTable =  {
     view: "treetable",
-    id: "treetable",
+    id: "productsTable",
+    select:"cell",
     tooltip: true,
-    scroll: "auto",
     columns: [
         { id: "id", header: "", width: 50},
         { id: "title", header: "Title", width: 250,
         template: "{common.treetable()} #title#" },
         { id: "price", header: "Price", width: 200}
     ],    
-    data: products
+    data: products,
+    ready: function() {
+        $$("productsTable").openAll();
+    },
 }
-
-const main = {
-    cells:[
-        { id: "Dashboard", cols: [dataTable, formForDatatable]},
-        { id: "Users", rows: [dataList, chart]},
-        { id: "Products", rows: [tree]},
-        { id: "Locations", template: "Locations view"}
-    ]
-};
-
-const content = { 
-    cols: [ 
-        mainMenu,
-        { view: "resizer"},
-        main,
-    ]
-};
 
 const headerButton = {
     view: "button",
@@ -242,6 +269,23 @@ const header = {
             borderless: true
         },
         headerButton,
+    ]
+};
+
+const main = {
+    cells: [
+        { id: "Dashboard", cols: [dataFilms, formForDataFilms] },
+        { id: "Users", rows: [dataUsers, chartUsers] },
+        { id: "Products", rows: [productsTable] },
+        { id: "Locations", template: "Locations view" }
+    ]
+};
+
+const content = { 
+    cols: [ 
+        mainMenu,
+        { view: "resizer" },
+        main,
     ]
 };
 
@@ -269,11 +313,8 @@ webix.ui({
     }
 });
 
-$$("mainMenuList").select("Dashboard");
-$$("treetable").openAll();
-$$("list_input").attachEvent("onTimedKeyPress", function() {
+let filterListUsers = $$("listUsers");
+$$("filterUsers").attachEvent("onTimedKeyPress", function() {
     let value = this.getValue().toLowerCase();
-    $$("list").filter(function(obj) {
-        return obj.name.toLowerCase().indexOf(value) !== -1;
-    })
+    filterListUsers.filter(obj => obj.name.toLowerCase().indexOf(value) !== -1);
 });
