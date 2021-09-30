@@ -4,10 +4,10 @@
     color: white;
     background: transparent;
 }
-.header_button .webix_button:hover {
-    background-color: rgb(101, 118, 133);
-}
-.header_button .webix_button:focus {
+.header_button .webix_button:hover,
+.header_button .webix_button:focus,
+.header
+{
     background-color: rgb(101, 118, 133);
 }
 .header_label{
@@ -26,21 +26,15 @@
 .mainmenu_list {
     background-color: rgb(238, 238, 238);
 }
-.header {
-    background-color: rgb(101, 118, 133);
-}
 .footer {
     text-align: center;
 }
-.id {
+.dataFilms_id {
     background-color: rgb(244, 245, 249);
 }
-.hover {
+.film_hover,
+.list_top,
+.user_young_highlight
+{
     background: orange;
-}
-.top_list {
-    background: orange;
-}
-.highlight{
-    background-color:lightyellow;
 }
