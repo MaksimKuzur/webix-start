@@ -6,7 +6,9 @@ const mainMenuList = {
     autoheight: true,
     scroll: false,
     select: true,
-    ready: () => $$("mainMenuList").select("Dashboard"),
+    ready() {
+        $$("mainMenuList").select("Dashboard");
+    },
     on: {
         onAfterSelect: id => $$(id).show()
     },
@@ -55,6 +57,7 @@ const dataFilms = {
         {
             view: "datatable",
             id: "dataFilms",
+            editable:true,
             scrollX: false,
             data: film_set,
             hover: "film_hover",
@@ -79,7 +82,9 @@ const dataFilms = {
                     obj.categoryId = randomInt(1, 4);
                 }
             },
-            ready: () => $$("dataFilms").select(2),
+            ready() {
+                $$("dataFilms").select(2);
+            },
             hover: "film_hover",
         }
     ]
@@ -97,13 +102,9 @@ const toolbarFormDataFilms = {
             view: "button",
             value: "Save",
             css: "webix_primary",
-            click: saveItem,
-        },
-        {
-            view: "button",
-            value: "Delete",
-            id: "btn_del",
-            click: deleteItem,
+            click() { 
+                $$("formForDataFilms").save() 
+            }
         },
         {
             view: "button",
@@ -111,36 +112,6 @@ const toolbarFormDataFilms = {
             click: clearForm,
         }
     ]
-};
-
-function saveItem() {
-    if($$("formForDataFilms").validate()) {
-        const form = $$("formForDataFilms");
-        const films = $$("dataFilms");
-        const itemData = form.getValues();
-        if (itemData.id) {
-            films.updateItem(itemData.id, itemData);
-        } else {
-            films.add(itemData);
-            webix.message("A new record has been added to the table");
-        }
-    }
-};
-
-function deleteItem() {
-    const films = $$("dataFilms");
-    const item_id = films.getSelectedId();
-    if (item_id) {
-        webix.confirm("Delete selected item?", "confirm-warning").then(
-            () => {
-                films.remove(item_id);
-                webix.message("Confirmed");
-                $$("formForDataFilms").clearValidation();
-                $$("formForDataFilms").clear();
-            }, 
-            () => webix.message("Rejected")
-        );
-    }
 };
 
 function clearForm() {
@@ -173,7 +144,7 @@ const formForDataFilms = {
         { view: "text", label: "Votes", name: "votes", invalidMessage: "< 100000" },        
         { view: "text", label: "Rating", name: "rating", invalidMessage: "cannot be empty or 0" },
         { view: "text", label: "Rank", name: "rank" },
-        { view: "text", label: "Category", name: "category" },
+        { view:"richselect", label: "Category", name: "categoryId", options: categories },
         toolbarFormDataFilms,
         { }
     ],
@@ -215,7 +186,11 @@ const dataUsers = {
                     value: "Add user",
                     width: 200,
                     click() {
-                        $$("listUsers").add({ name: (userRandom[randomInt(1, 5)]).value, age:randomInt(1, 90), country:(countryRandom[randomInt(1, 5)]).value })
+                        $$("listUsers").add({
+                            name: (userRandom[randomInt(1, 5)]).value,
+                            age: randomInt(1, 90),
+                            country: (countryRandom[randomInt(1, 5)]).value
+                        })
                     }
                 }
             ]
@@ -239,9 +214,10 @@ const dataUsers = {
                 }
             },
             scheme: {
-                $init: function(obj) {
-                    if(obj.age < 26)
-                    obj.$css = "user_young_highlight";
+                $init(obj) {
+                    if(obj.age < 26) {
+                        obj.$css = "user_young_highlight";
+                    }
                 },
                 $sort: {
                     by: "votes",
@@ -269,8 +245,7 @@ const chartUsers = {
                 start: 0,
                 step: 2,
                 end: 10
-            },
-            data: users
+            }
         },
     ]
 }
@@ -369,8 +344,9 @@ $$("chartUsers").sync($$("listUsers"), function() {
         by: "country",
         map: {
             country: ["country", "count"]
-        }	
+        }
     });
+    $$('chartUsers').sort('#id#','asc');
 });
 
 $$("formForDataFilms").bind($$("dataFilms"));
@@ -381,18 +357,15 @@ $$("filterUsers").attachEvent("onTimedKeyPress", function() {
 });
 $$("dataFilms").registerFilter(
     $$("selector"), 
-    { columnId: "year", compare: function(value, filter, item) {
-        let year = value;
+    { columnId: "year", compare(year, filter, item) {
         if(filter == 1)  return year > 0;
         else if (filter == 2) return year <=1990;
         else if (filter == 4) return year >=2010;
         else return year >2000;
     }},
     { 
-        getValue: function(node){
-            return node.getValue();
-        },
-        setValue: function(node, value){
+        getValue: node => node.getValue(),
+        setValue(node, value) {
             node.setValue(value);
         }
     }
