@@ -6,7 +6,7 @@ const mainMenuList = {
     autoheight: true,
     scroll: false,
     select: true,
-    ready: function() {
+    ready() {
         $$("mainMenuList").select("Dashboard");
     },
     on: {
@@ -50,7 +50,7 @@ const dataFilms = {
             return false;
         }
     },
-    on:{
+    on: {
         onAfterSelect:valuesToForm
     },
     hover: "film_hover",
@@ -87,8 +87,8 @@ const toolbarFormDataFilms = {
 };
 
 function saveItem() {
-    if($$("formForDataFilms").validate()) {
-        const form = $$("formForDataFilms");
+    const form = $$("formForDataFilms");
+    if(form.validate()) {
         const films = $$("dataFilms");
         const itemData = form.getValues();
         if (itemData.id) {
@@ -102,11 +102,11 @@ function saveItem() {
 
 function deleteItem() {
     const films = $$("dataFilms");
-    const item_id = films.getSelectedId();
-    if (item_id) {
+    const itemId = films.getSelectedId();
+    if (itemId) {
         webix.confirm("Delete selected item?", "confirm-warning").then(
             () => {
-                films.remove(item_id);
+                films.remove(itemId);
                 webix.message("Confirmed");
                 $$("formForDataFilms").clearValidation();
                 $$("formForDataFilms").clear();
@@ -196,10 +196,11 @@ const dataUsers = {
                 }
             },
             ready: () => {
-                const listTop = $$("listUsers");
-                listTop.clearCss("list_top");
-                for (let  i = 0; i < (listTop.count() > 4 ? 5 : listTop.count()); i++ ) {
-                    listTop.addCss(listTop.data.order[i], "list_top");
+                const listUsers = $$("listUsers");
+                const listUsersCount = listUsers.count() > 4 ? 5 : listUsers.count();
+                listUsers.clearCss("list_top");
+                for (let  i = 0; i < (listUsersCount); i++ ) {
+                    listUsers.addCss(listUsers.data.order[i], "list_users");
                 }
             },
             data: users
@@ -242,7 +243,7 @@ const productsTable =  {
         { id: "price", header: "Price", width: 200}
     ],    
     data: products,
-    ready: function() {
+    ready() {
         $$("productsTable").openAll();
     },
 }
