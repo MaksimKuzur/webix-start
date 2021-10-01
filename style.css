@@ -33,7 +33,8 @@
     background-color: rgb(244, 245, 249);
 }
 .film_hover,
-.list_users
+.list_users,
+.user_young_highlight
 {
     background: orange;
 }

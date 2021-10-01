@@ -32,35 +32,67 @@ const mainMenu = {
     ]
 };
 
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+const categoriesCollection = new webix.DataCollection({ data: categories });
+
 const dataFilms = {
-    view: "datatable",
-    id: "dataFilms",
-    scrollX: false,
-    select:true,
-    columns: [
-        { id: "id", header: "", css: "dataFilms_id", width: 50},
-        { id: "title", header: ["Film title", {content:"textFilter"}], fillspace: true, sort: "string"},
-        { id: "year", header: ["Released", {content:"selectFilter"}] , width: 80, sort: "int"},
-        { id: "votes", header: ["Votes", {content:"textFilter"}], width: 100, sort: "int"},
-        { id: "del", header: "", template: "<span class='on_click_delete webix_icon wxi-trash'></span>" },
-    ],
-    onClick: {
-        "on_click_delete": function(e, id) {
-            this.remove(id);
-            return false;
+    rows: [
+        {
+            view: "segmented", id: "selector", inputWidth: 400,
+            options: [
+                {id: 1, value: "All"},
+                {id: 2, value: "Old"},
+                {id: 3, value: "Modern"},
+                {id: 4, value: "New"}
+            ],
+            on: {
+            onChange() {
+                $$("dataFilms").filterByAll();
+                }
+            }
+        },
+        {
+            view: "datatable",
+            id: "dataFilms",
+            editable:true,
+            scrollX: false,
+            data: film_set,
+            hover: "film_hover",
+            select: true,
+            columns: [
+                { id: "id", header: "", css: "dataFilms_id", width: 50},
+                { id: "title", header: ["Film title", {content:"textFilter"}], width: 200, sort: "string"},
+                { id: "categoryId", header: ["Category", {content:"selectFilter"}], options: categories, width: 200, sort: "string"},
+                { id: "rating", header: ["Rating", {content:"textFilter"}] , width: 80, sort: "int"},
+                { id: "votes", header: ["Votes", {content:"textFilter"}], width: 100, sort: "int"},
+                { id: "year", header: ["Year"] , width: 80, sort: "int"},
+                { id: "del", header: "", template: "<span class='on_click_delete webix_icon wxi-trash'></span>" },
+            ],
+            onClick: {
+                "on_click_delete": function(e, id) {
+                    this.remove(id);
+                    return false;
+                }
+            },
+            scheme: {
+                $init(obj) {
+                    obj.categoryId = randomInt(1, 4);
+                }
+            },
+            ready() {
+                $$("dataFilms").select(2);
+            },
+            hover: "film_hover",
         }
-    },
-    on: {
-        onAfterSelect:valuesToForm
-    },
-    hover: "film_hover",
-    data: film_set,
+    ]
 };
 
-function valuesToForm(id) {
-    var values = $$("dataFilms").getItem(id);
-    $$("formForDataFilms").setValues(values)
-};
+webix.protoUI({
+    name: "editlist"
+}, webix.EditAbility, webix.ui.list);
 
 const toolbarFormDataFilms = {
     margin: 10,
@@ -70,50 +102,20 @@ const toolbarFormDataFilms = {
             view: "button",
             value: "Save",
             css: "webix_primary",
-            click: saveItem,
-        },
-        {
-            view: "button",
-            value: "Delete",
-            id: "btn_del",
-            click: deleteItem,
+            click() {
+                const form = $$("formForDataFilms");
+                if(form.validate()) {
+                    form.save()
+                    webix.message("The record was saved in the table");
+                }
+            }
         },
         {
             view: "button",
             value: "Clear",
-            click:clearForm,
+            click: clearForm,
         }
     ]
-};
-
-function saveItem() {
-    const form = $$("formForDataFilms");
-    if(form.validate()) {
-        const films = $$("dataFilms");
-        const itemData = form.getValues();
-        if (itemData.id) {
-            films.updateItem(itemData.id, itemData);
-        } else {
-            films.add(itemData);
-            webix.message("A new record has been added to the table");
-        }
-    }
-};
-
-function deleteItem() {
-    const films = $$("dataFilms");
-    const itemId = films.getSelectedId();
-    if (itemId) {
-        webix.confirm("Delete selected item?", "confirm-warning").then(
-            () => {
-                films.remove(itemId);
-                webix.message("Confirmed");
-                $$("formForDataFilms").clearValidation();
-                $$("formForDataFilms").clear();
-            }, 
-            () => webix.message("Rejected")
-        );
-    }
 };
 
 function clearForm() {
@@ -146,6 +148,7 @@ const formForDataFilms = {
         { view: "text", label: "Votes", name: "votes", invalidMessage: "< 100000" },        
         { view: "text", label: "Rating", name: "rating", invalidMessage: "cannot be empty or 0" },
         { view: "text", label: "Rank", name: "rank" },
+        { view:"richselect", label: "Category", name: "categoryId", options: categories },
         toolbarFormDataFilms,
         { }
     ],
@@ -181,53 +184,73 @@ const dataUsers = {
                     click() {
                         $$('listUsers').sort("#name#","desc");
                     }
+                },
+                {
+                    view: "button",
+                    value: "Add user",
+                    width: 200,
+                    click() {
+                        $$("listUsers").add({
+                            name: (userRandom[randomInt(1, 5)]).value,
+                            age: randomInt(1, 90),
+                            country: (countryRandom[randomInt(1, 5)]).value
+                        })
+                    }
                 }
             ]
         },
         {
-            view: "list",
+            view: "editlist",
             id: "listUsers",
             select: true,
-            template: "#name# <span class='on_click_delete webix_icon wxi-close'></span>",
+            template: "#name#, #age#, from #country# <span class='on_click_delete webix_icon wxi-close'></span>",
+            editable: true,
+            editor: "text",
+            editValue: "name",
+            editaction: "dblclick",
+            rules: {
+                name: webix.rules.isNotEmpty,
+            },
             onClick: {
                 "on_click_delete": function(e, id) {
-                  this.remove(id);
+                    this.remove(id);
                     return false;
                 }
             },
-            ready: () => {
-                const listUsers = $$("listUsers");
-                const listUsersCount = listUsers.count() > 4 ? 5 : listUsers.count();
-                listUsers.clearCss("list_top");
-                for (let  i = 0; i < (listUsersCount); i++ ) {
-                    listUsers.addCss(listUsers.data.order[i], "list_users");
-                }
+            scheme: {
+                $init(obj) {
+                    if(obj.age < 26) {
+                        obj.$css = "user_young_highlight";
+                    }
+                },
+                $sort: {
+                    by: "votes",
+                    dir: "desc"
+                },
             },
-            data: users
+            data: webix.copy(users)
         }
     ]
 };
 
 const chartUsers = {
-    type: "clean", rows: [
+    rows: [
         {
-            type: "clean",
-            height: 54
-        },
-        {
-            type: "clean",
             view: "chart",
+            id: "chartUsers",
             type: "bar",
-            value: "#age#",
-            barWidth: 30,
-            radius: 0,
-            height: 300,
+            value: "#country#",
+            preset: "column",
             xAxis: {
-                template: "#age#",
-                title: "Age"
+                template: "#id#",
+                title: "Country"
             },
-            data: users
-        }
+            yAxis: {
+                start: 0,
+                step: 2,
+                end: 10
+            }
+        },
     ]
 }
 
@@ -236,16 +259,22 @@ const productsTable =  {
     id: "productsTable",
     select:"cell",
     tooltip: true,
+    editable: true,
     columns: [
         { id: "id", header: "", width: 50},
         { id: "title", header: "Title", width: 250,
-        template: "{common.treetable()} #title#" },
-        { id: "price", header: "Price", width: 200}
-    ],    
-    data: products,
+        template: "{common.treetable()} #title#", editor: "text" },
+        { id: "price", header: "Price", width: 200, editor: "text" }
+    ],
+    rules: {
+        title: webix.rules.isNotEmpty,
+        price: webix.rules.isNumber,
+        data: webix.rules.isNumber
+    },
     ready() {
         $$("productsTable").openAll();
     },
+    data: products
 }
 
 const headerButton = {
@@ -314,8 +343,34 @@ webix.ui({
     }
 });
 
+$$("chartUsers").sync($$("listUsers"), function() {
+    this.group({
+        by: "country",
+        map: {
+            country: ["country", "count"]
+        }
+    });
+    $$('chartUsers').sort('#id#','asc');
+});
+
+$$("formForDataFilms").bind($$("dataFilms"));
 let filterListUsers = $$("listUsers");
 $$("filterUsers").attachEvent("onTimedKeyPress", function() {
     let value = this.getValue().toLowerCase();
     filterListUsers.filter(obj => obj.name.toLowerCase().indexOf(value) !== -1);
 });
+$$("dataFilms").registerFilter(
+    $$("selector"), 
+    { columnId: "year", compare(year, filter, item) {
+        if(filter == 1)  return year > 0;
+        else if (filter == 2) return year <=1990;
+        else if (filter == 4) return year >=2010;
+        else return year >2000;
+    }},
+    { 
+        getValue: node => node.getValue(),
+        setValue(node, value) {
+            node.setValue(value);
+        }
+    }
+);
