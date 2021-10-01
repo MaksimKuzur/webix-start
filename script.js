@@ -102,8 +102,12 @@ const toolbarFormDataFilms = {
             view: "button",
             value: "Save",
             css: "webix_primary",
-            click() { 
-                $$("formForDataFilms").save() 
+            click() {
+                const form = $$("formForDataFilms");
+                if(form.validate()) {
+                    form.save()
+                    webix.message("The record was saved in the table");
+                }
             }
         },
         {
