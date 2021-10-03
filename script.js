@@ -7,12 +7,12 @@ const mainMenuList = {
     scroll: false,
     select: true,
     ready() {
-        $$("mainMenuList").select("Dashboard");
+        $$("mainMenuList").select("Users");
     },
     on: {
         onAfterSelect: id => $$(id).show()
     },
-    data: [ "Dashboard", "Users", "Products", "Locations" ]
+    data: [ "Dashboard", "Users", "Products", "Admin" ]
 };
 
 const statusConnectionLabel = {
@@ -36,7 +36,7 @@ function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-const categoriesCollection = new webix.DataCollection({ data: categories });
+const categoriesCollection = new webix.DataCollection({ url: "categories.json" });
 
 const dataFilms = {
     rows: [
@@ -49,23 +49,23 @@ const dataFilms = {
                 {id: 4, value: "New"}
             ],
             on: {
-            onChange() {
-                $$("dataFilms").filterByAll();
+                onChange() {
+                    $$("dataFilms").filterByAll();
                 }
             }
         },
         {
             view: "datatable",
             id: "dataFilms",
-            editable:true,
+            editable: true,
             scrollX: false,
-            data: film_set,
+            data: filmSet,
             hover: "film_hover",
             select: true,
             columns: [
                 { id: "id", header: "", css: "dataFilms_id", width: 50},
-                { id: "title", header: ["Film title", {content:"textFilter"}], width: 200, sort: "string"},
-                { id: "categoryId", header: ["Category", {content:"selectFilter"}], options: categories, width: 200, sort: "string"},
+                { id: "title", header: ["Film title", {content:"textFilter"}], fillspace: true, sort: "string"},
+                { id: "categoryId", header: ["Category", {content:"selectFilter"}], collection: categoriesCollection, width: 200, sort: "string"},
                 { id: "rating", header: ["Rating", {content:"textFilter"}] , width: 80, sort: "int"},
                 { id: "votes", header: ["Votes", {content:"textFilter"}], width: 100, sort: "int"},
                 { id: "year", header: ["Year"] , width: 80, sort: "int"},
@@ -148,7 +148,7 @@ const formForDataFilms = {
         { view: "text", label: "Votes", name: "votes", invalidMessage: "< 100000" },        
         { view: "text", label: "Rating", name: "rating", invalidMessage: "cannot be empty or 0" },
         { view: "text", label: "Rank", name: "rank" },
-        { view:"richselect", label: "Category", name: "categoryId", options: categories },
+        { view:"richselect", label: "Category", name: "categoryId", options: categoriesCollection },
         toolbarFormDataFilms,
         { }
     ],
@@ -159,6 +159,8 @@ const formForDataFilms = {
         rating: value => value > 0,
     }
 };
+
+const usersCollection = new webix.DataCollection({ url: "users.json" });
 
 const dataUsers = {
     margin: 10,
@@ -190,11 +192,13 @@ const dataUsers = {
                     value: "Add user",
                     width: 200,
                     click() {
-                        $$("listUsers").add({
-                            name: (userRandom[randomInt(1, 5)]).value,
-                            age: randomInt(1, 90),
-                            country: (countryRandom[randomInt(1, 5)]).value
-                        })
+                        usersCollection.add(
+                            {
+                                name: (userRandom[randomInt(0, 4)]).value,
+                                age: randomInt(1, 90),
+                                country: (countryRandom[randomInt(0, 4)]).value
+                            }
+                        )
                     }
                 }
             ]
@@ -206,14 +210,14 @@ const dataUsers = {
             template: "#name#, #age#, from #country# <span class='on_click_delete webix_icon wxi-close'></span>",
             editable: true,
             editor: "text",
-            editValue: "name",
+            editValue: "country",
             editaction: "dblclick",
             rules: {
                 name: webix.rules.isNotEmpty,
             },
             onClick: {
                 "on_click_delete": function(e, id) {
-                    this.remove(id);
+                    usersCollection.remove(id);
                     return false;
                 }
             },
@@ -227,8 +231,7 @@ const dataUsers = {
                     by: "votes",
                     dir: "desc"
                 },
-            },
-            data: webix.copy(users)
+            }
         }
     ]
 };
@@ -257,7 +260,7 @@ const chartUsers = {
 const productsTable =  {
     view: "treetable",
     id: "productsTable",
-    select:"cell",
+    select: "cell",
     tooltip: true,
     editable: true,
     columns: [
@@ -302,12 +305,39 @@ const header = {
     ]
 };
 
+const toolbarForCategoryTable = {
+    view: "toolbar",
+    cols: [
+          { view:"button", value:"Add new", click() {
+            categoriesCollection.add({id: webix.uid(), value: "Since fiction"})
+          }},
+          { view:"button", value:"Remove selected", click() {
+            var selectionCategory = $$("categoryTable").getSelectedId();
+            categoriesCollection.remove(selectionCategory);
+          }},
+        {gravity:2}
+    ]
+}
+
+const categoryTable = {
+    view:"datatable",
+    id:"categoryTable",
+    columns:[
+      { id: "id", header: "id", width: 200,	editor: "text"},
+      { id: "value", header: "Category", editor: "text", fillspace: true}
+    ],
+    editaction: "dblclick",
+    editable: true,
+    scrollX: false,
+    select: true,
+}
+
 const main = {
     cells: [
         { id: "Dashboard", cols: [dataFilms, formForDataFilms] },
         { id: "Users", rows: [dataUsers, chartUsers] },
         { id: "Products", rows: [productsTable] },
-        { id: "Locations", template: "Locations view" }
+        { id: "Admin", rows: [toolbarForCategoryTable, categoryTable] }
     ]
 };
 
@@ -333,6 +363,18 @@ webix.ui({
     ]
 });
 
+$$("categoryTable").sync(categoriesCollection);
+$$("listUsers").sync(usersCollection);
+$$("chartUsers").sync(usersCollection, function() {
+    this.group({
+        by: "country",
+        map: {
+            country: ["country", "count"]
+        }
+    });
+    $$('chartUsers').sort('#id#','asc');
+});
+
 webix.ui({
     view: "popup",
     id: "popupProfile",
@@ -343,22 +385,13 @@ webix.ui({
     }
 });
 
-$$("chartUsers").sync($$("listUsers"), function() {
-    this.group({
-        by: "country",
-        map: {
-            country: ["country", "count"]
-        }
-    });
-    $$('chartUsers').sort('#id#','asc');
-});
-
 $$("formForDataFilms").bind($$("dataFilms"));
 let filterListUsers = $$("listUsers");
 $$("filterUsers").attachEvent("onTimedKeyPress", function() {
     let value = this.getValue().toLowerCase();
     filterListUsers.filter(obj => obj.name.toLowerCase().indexOf(value) !== -1);
 });
+
 $$("dataFilms").registerFilter(
     $$("selector"), 
     { columnId: "year", compare(year, filter, item) {
