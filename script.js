@@ -312,7 +312,8 @@ const toolbarForCategoryTable = {
             categoriesCollection.add({id: webix.uid(), value: "Since fiction"})
           }},
           { view:"button", value:"Remove selected", click() {
-            var selectionCategory = $$("categoryTable").getSelectedId();
+            let selectionCategory = $$("categoryTable").getSelectedId();
+            if(selectionCategory)
             categoriesCollection.remove(selectionCategory);
           }},
         {gravity:2}
